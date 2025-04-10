@@ -1,38 +1,10 @@
-import mongoose from "mongoose";
-import {genSalt} from "bcrypt"
+import { Router } from "express";
+import { login, signUp } from "../controllers/AuthController.js";
 
-const userSchema=new.mongoose.Schema({
-    email: {
-        type: String,
-        required: [true, "Email is Required"],
-        unique: true,
-    },
-    password: {
-        type: String,
-        required: [true, "Password is required"]
-    },
-    firstName: {
-        type: String,
-        required: false,
-    },
-    lastName: {
-        type: String,
-        required: false,
-    },
-    image: {
-        type: String,
-        required: false,
-    },
-    color: {
-        type: String,
-        required: false,
-    },
-    profileSetup: {
-        type: Boolean,
-        default: false,
-    },
-});
+const authRoutes = Router();
 
-userSchema.pre("save", async function (next)=>{
-    const salt=await genSalt();
-})
+authRoutes.post("/signup", signUp);
+authRoutes.post("/login", login);
+authRoutes.get('/user-info', getUserInfo);
+
+export default authRoutes;
