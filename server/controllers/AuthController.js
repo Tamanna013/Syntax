@@ -106,20 +106,44 @@ export const login = async (request, response) => {
 
 export const getUserInfo = async (request, response) => {
     try{
-    /*
-        // Send back a success response with selected user details
+        const userData=await User.findById(request.userID);
+        if(!userData) return response.status(404).send("User not found");
         return response.status(200).json({
-            user: {
-                id: user.id,
-                email: user.email,
-                profileSetup: user.profileSetup,
-                image: user.image,
-                firstName: user.firstName,
-                lastName: user.lastName,
-                color: user.color
-            }
+            id: userData.id,
+            email: userData.email,
+            profileSetup: userData.profileSetup,
+            image: userData.image,
+            firstName: userData.firstName,
+            lastName: userData.lastName,
+            color: userData.color
         });
-    */
+    } catch (err) {
+        // Log any unexpected error and send a generic server error response
+        console.log(err.message);
+        return response.status(500).send("Internal Server Error", err.message);
+    }
+};
+
+export const updateProfile = async (request, response) => {
+    try{
+        const {userID} = request;
+        const {firstName, lastName, color} = request.body;
+        if(!firstName || !lastName) return response.status(400).send("Please fill all the fields to proceed");
+        const userData=await User.findByIdAndUpdate(userID, {
+            firstName,
+            lastName,
+            color,
+            profileSetup: true
+        }, {new:true, runValidators:true});
+        return response.status(200).json({
+            id: userData.id,
+            email: userData.email,
+            profileSetup: userData.profileSetup,
+            image: userData.image,
+            firstName: userData.firstName,
+            lastName: userData.lastName,
+            color: userData.color
+        });
     } catch (err) {
         // Log any unexpected error and send a generic server error response
         console.log(err.message);
