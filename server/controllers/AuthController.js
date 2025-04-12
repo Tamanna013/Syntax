@@ -4,6 +4,7 @@ import bcrypt from "bcrypt"; // Import bcrypt for password hashing and compariso
 
 // Import the 'sign' method from jsonwebtoken to generate JWTs (JSON Web Tokens)
 import jwt from "jsonwebtoken";
+import { renameSync, unlinkSync } from "fs"; // Import renameSync to rename files (if needed)
 
 // Define the token's maximum age (in milliseconds)
 // This represents 3 days: 3 * 24 hours * 60 minutes * 60 seconds * 1000 ms
@@ -144,6 +145,46 @@ export const updateProfile = async (request, response) => {
             lastName: userData.lastName,
             color: userData.color
         });
+    } catch (err) {
+        // Log any unexpected error and send a generic server error response
+        console.log(err.message);
+        return response.status(500).send("Internal Server Error", err.message);
+    }
+};
+
+export const addProfileImage = async (request, response, next) => {
+    try{
+        if(!request.file){
+            return response.status(400).send("File is required");
+        }
+        const date=Date.now();
+        let fileName="uploads/profiles/"+date+request.file.originalname;
+        renameSync(request.file.path, fileName);
+
+        const updatedUser=await User.findByIdAndUpdate(request.userID, {image: fileName}, {new: true, runValidators:true});
+
+        return response.status(200).json({
+            image: updatedUser.image,
+        });
+    } catch (err) {
+        // Log any unexpected error and send a generic server error response
+        console.log(err.message);
+        return response.status(500).send("Internal Server Error", err.message);
+    }
+};
+
+export const removeProfileImage = async (request, response) => {
+    try{
+        const {userID} = request;
+        const user= await User.findById(userID);
+        if(!user) return response.status(404).send("User not found");
+        if(user.image){
+            unlinkSync(user.image);
+        }
+        user.image=null;
+        await user.save();
+        
+        return response.status(200).send("Image removed successfully");
     } catch (err) {
         // Log any unexpected error and send a generic server error response
         console.log(err.message);

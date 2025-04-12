@@ -37,6 +37,8 @@ app.use(cors({
     credentials: true              // Allow cookies and authentication headers in cross-origin requests
 }));
 
+app.use("/uploads/profiles", express.static("uploads/profiles"));
+
 // Parse cookies attached to incoming HTTP requests
 app.use(cookieParser());
 
