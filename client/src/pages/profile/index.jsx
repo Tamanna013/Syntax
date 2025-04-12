@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {IoArrowBack} from 'react-icons/io5';
 import { useAppStore } from '../../store/index';
@@ -9,7 +9,7 @@ import { cn } from '../../lib/utils';
 import { Input } from '../../components/ui/input';
 import { Button } from '../../components/ui/button';
 import { toast } from 'sonner';
-import { UPDATE_PROFILE_ROUTE } from '../../utils/constants';
+import { ADD_PROFILE_IMAGE_ROUTE, REMOVE_PROFILE_IMAGE_ROUTE, UPDATE_PROFILE_ROUTE } from '../../utils/constants';
 import {apiClient} from '../../lib/api-client';
 
 const Profile = () => {
@@ -20,6 +20,8 @@ const Profile = () => {
     const [image, setImage] = useState(null);
     const [selectedColor, setSelectedColor] = useState(0);
     const [hovered, setHovered] = useState(false);
+    const fileInputRef= useState(null);
+    const HOST = import.meta.env.VITE_HOST;
 
     const handleNavigate = () => {
         if(userInfo.profileSetup){
@@ -38,12 +40,32 @@ const Profile = () => {
     ];
 
     useEffect(() => {
-        if(userInfo){
+        if(userInfo.profileSetup){
             setFirstName(userInfo.firstName);
             setLastName(userInfo.lastName);
             setSelectedColor(userInfo.color);
         }
+        if(userInfo.image){
+            setImage(`${HOST}/${userInfo.image}`);
+        }
     },[userInfo]);
+
+    const handleFileInputClick = () => {
+        fileInputRef.current.click();
+    }
+    const handleImageChange=async(event)=>{
+        const file=event.target.files[0];
+        console.log(file);
+        if(file){
+            const formData=new FormData();
+            formData.append("profile-image", file);
+            const response=await apiClient.post(ADD_PROFILE_IMAGE_ROUTE, formData, {withCredentials:true});
+            if(response.status===200 && response.data.image){
+                setUserInfo({...userInfo, image: response.data.image});
+                toast.success("Profile image updated successfully");
+            }
+        }
+    };
 
     const validateProfile = () => {
         if(!firstName){
@@ -72,6 +94,19 @@ const Profile = () => {
         }
     };
 
+    const handleDeleteImage=async()=>{
+        try{
+            const response=await apiClient.delete(REMOVE_PROFILE_IMAGE_ROUTE, {withCredentials:true});
+            if(response.status===200){
+                setUserInfo({...userInfo, image: null});
+                setImage(null);
+                toast.success("Profile image removed successfully");
+            }
+        } catch(error){
+            console.log(error);
+        }
+    }
+
     return (
         <div className='bg-[#1b1c24] h-screen flex flex-col items-center justify-center gap-10'>
             <div className='flex flex-col w-[80vw] md:w-max gap-10'>
@@ -89,15 +124,16 @@ const Profile = () => {
                         </Avatar>
                         {
                             hovered && (
-                                <div className='absolute inset-0 flex items-center justify-center bg-black/50 ring-fuchsia-50 rounded-full'> {image ? <FaTrash className='text-white text-3xl cursor-pointer' /> : <FaPlus className='text-white text-3xl cursor-pointer' />}</div>
+                                <div className='absolute inset-0 flex items-center justify-center bg-black/50 ring-fuchsia-50 rounded-full' onClick={image?handleDeleteImage:handleFileInputClick}> {image ? <FaTrash className='text-white text-3xl cursor-pointer' /> : <FaPlus className='text-white text-3xl cursor-pointer' />}</div>
                             )
                         }
                     </div>
+                    <input type="file" ref={(el) => (fileInputRef.current = el)} className='hidden' onChange={handleImageChange} name='profile-image' accept=".png, .jpg, .jpeg, .svg, .webp"/>
                     <div className='flex min-w-32 md:min-w-64 flex-col gap-5 text-white items-center justify-center'>
                         <div className='w-full'>
                             <Input placeholder="Email" type="email" disabled value={userInfo.email} className="rounded-lg p-6 bg-[#2c2e3b] border-none"></Input>
-                            <Input placeholder="First Name" type="text" onChange={e=>setFirstName(e.target.value)} value={firstName} className="rounded-lg p-6 bg-[#2c2e3b] border-none" />
-                            <Input placeholder="Last Name" type="text" onChange={e=>setLastName(e.target.value)} value={lastName} className="rounded-lg p-6 bg-[#2c2e3b] border-none" />
+                            <Input placeholder="First Name" type="text" onChange={e=>setFirstName(e.target.value)} value={firstName ?? ""} className="rounded-lg p-6 bg-[#2c2e3b] border-none" />
+                            <Input placeholder="Last Name" type="text" onChange={e=>setLastName(e.target.value)} value={lastName ?? ""} className="rounded-lg p-6 bg-[#2c2e3b] border-none" />
                         </div>
                         <div className='w-full flex flex-row gap-5'>
                         {
