@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import { apiClient } from "@/lib/api-client";
 import { useNavigate } from "react-router-dom";
 import { SIGNUP_ROUTE, LOGIN_ROUTE } from "@/utils/constants";
-import { useAppStore } from "../../store";
+import { useAppStore } from "../../store/index";
 
 const Auth = () => {
     const [email, setEmail] = useState("");

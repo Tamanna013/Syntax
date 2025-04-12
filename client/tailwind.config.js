@@ -3,9 +3,7 @@ export default {
     darkMode: ["class"],
     content: [
 		"./index.html",
-		"./src/pages/auth/index.jsx",
-		"./src/pages/chat/index.jsx",
-		"./src/pages/profile/index.jsx"
+		"./src/**/*.{js,jsx,ts,tsx}"
 	],
   theme: {
   	extend: {
@@ -17,6 +15,18 @@ export default {
   		colors: {
   			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
+			'hot-pink': '#ff006e',
+    		'sunny-yellow': '#ffd60a',
+    		'mint-green': '#06d6a0',
+    		'sky-blue': '#4cc9f0',
+    		'hot-pink-translucent': '#712c4a57',
+    		'sunny-yellow-translucent': '#ffd60a2a',
+    		'mint-green-translucent': '#06d6a02a',
+    		'sky-blue-translucent': '#4cc9f02a',
+    		'hot-pink-border': '#ff006faa',
+    		'sunny-yellow-border': '#ffd60abb',
+    		'mint-green-border': '#06d6a0bb',
+    		'sky-blue-border': '#4cc9f0bb',
   			card: {
   				DEFAULT: 'hsl(var(--card))',
   				foreground: 'hsl(var(--card-foreground))'
