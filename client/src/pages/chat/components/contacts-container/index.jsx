@@ -1,3 +1,6 @@
+import NewDM from "./components/new-dm";
+import ProfileInfo from "./components/profile-info";
+
 const Logo = () => {
   return (
     <div className="flex p-5  justify-start items-center gap-2">
@@ -29,13 +32,14 @@ const Title=({text})=>{
 
 const ContactsContainer = () => {
   return (
-    <div className="relative md:w-[30vw] lg:w-[30vw] xl:[20vw] bg-[#1b1c24] border-r-2 border-[#2f303b] w-full">
+    <div className="relative md:w-[35vw] lg:w-[30vw] xl:[20vw] bg-[#1b1c24] border-r-2 border-[#2f303b] w-full">
       <div className="pt-3">
         <Logo />
       </div>
       <div className="my-5">
         <div className="flex pr-10 justify-between items-center">
           <Title text="Direct Messages" />
+          <NewDM />
         </div>
       </div>
       <div className="my-5">
@@ -43,6 +47,7 @@ const ContactsContainer = () => {
           <Title text="Channels" />
         </div>
       </div>
+      <ProfileInfo />
     </div>
   )
 }
