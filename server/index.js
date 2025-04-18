@@ -17,6 +17,7 @@ import mongoose from "mongoose";
 
 // Import route handlers for authentication (sign up, login, etc.)
 import authRoutes from "./routes/AuthRoutes.js";
+import contactRoutes from "./routes/ContactRoutes.js";
 
 // Load environment variables from .env file into process.env
 dotenv.config();
@@ -48,6 +49,7 @@ app.use(express.json());
 // Register authentication-related API routes under the /api/auth path
 // For example: POST /api/auth/signup, POST /api/auth/login, etc.
 app.use("/api/auth", authRoutes);
+app.use("/api/contacts", contactRoutes);
 
 // Start the server and listen on the specified port
 // Log a message once the server is up and running
