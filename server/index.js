@@ -18,6 +18,7 @@ import mongoose from "mongoose";
 // Import route handlers for authentication (sign up, login, etc.)
 import authRoutes from "./routes/AuthRoutes.js";
 import contactRoutes from "./routes/ContactRoutes.js";
+import setupSocket from "./socket.js";
 
 // Load environment variables from .env file into process.env
 dotenv.config();
@@ -56,6 +57,8 @@ app.use("/api/contacts", contactRoutes);
 const server = app.listen(port, () => {
     console.log(`Server is running at http://localhost:${port}`);
 });
+
+setupSocket(server)
 
 // Establish a connection to MongoDB using Mongoose
 // Log a success message if connected, or an error message if the connection fails
