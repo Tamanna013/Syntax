@@ -83,7 +83,7 @@ const ProfileInfo = () => {
             <Tooltip>
               <TooltipTrigger asChild>
                 <button
-                  onClick={() => navigate('/logout')}
+                  onClick={() => navigate('/auth')}
                   className="text-red-500 hover:text-white transition-all duration-200"
                 >
                   <IoPowerSharp className="text-xl" onClick={logout} />

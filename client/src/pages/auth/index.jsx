@@ -20,21 +20,49 @@ const Auth = () => {
     const navigate = useNavigate();
     const { setUserInfo } = useAppStore();
 
-    const validateSignup = () => {
-        if(!email.length){
-            toast.error("Email is required");
-            return false;
+    const handleSignup = async () => {
+        if (!validateSignup()) return;
+    
+        try {
+            const response = await apiClient.post(
+                SIGNUP_ROUTE,
+                { email, password },
+                { withCredentials: true }
+            );
+    
+            if (!response.data || !response.data.user) {
+                toast.error("Sign-up failed. Try again later");
+                return;
+            }
+    
+            const user = response.data.user;
+            setUserInfo(user);
+            toast.success("Account created successfully!");
+    
+            navigate("/profile");
+        } catch (error) {
+            console.error("Signup error →", error);
+    
+            if (error.response) {
+                const { status, data } = error.response;
+    
+                if (status === 409) {
+                    toast.error("This email is already in use");
+                } else if (data && data.message) {
+                    toast.error(data.message);
+                } else if (status === 500) {
+                    toast.error("Server isn't responding. Try again later");
+                } else {
+                    toast.error("Something went wrong during sign-up");
+                }
+    
+            } else if (error.request) {
+                toast.error("No server response. Check your internet");
+            } else {
+                toast.error("Unexpected error. Please try again");
+            }
         }
-        if(!password.length){
-            toast.error("Password is required");
-            return false;
-        }
-        if(password !== confirmPassword){
-            toast.error("Password and confirm password do not match");
-            return false;
-        }
-        return true;
-    };
+    };    
 
     const validateLogin = () => {
         if(!email.length){
@@ -62,17 +90,34 @@ const Auth = () => {
         }
     };
 
-    const handleSignup = async () => {
-        const response=await apiClient.post(SIGNUP_ROUTE, {email, password}, {withCredentials: true});
-        if (!validateSignup()){
-            console.log({response});
+    const validateSignup = () => {
+        if (!email.trim()) {
+            toast.error("Email is required");
+            return false;
         }
-        if (response.status === 201){
-            setUserInfo(response.data.user);
-            toast.success("Account created successfully!");
-            navigate("/profile");
+        if (!/\S+@\S+\.\S+/.test(email)) {
+            toast.error("Invalid email format");
+            return false;
         }
-    }
+        if (!password) {
+            toast.error("Password is required");
+            return false;
+        }
+        if (password.length < 6) {
+            toast.error("Password must be at least 6 characters");
+            return false;
+        }
+        if (!confirmPassword) {
+            toast.error("Confirm your password");
+            return false;
+        }
+        if (password !== confirmPassword) {
+            toast.error("Passwords do not match.");
+            return false;
+        }
+        return true;
+    };
+    
     return (
         <div className="h-screen w-screen flex items-center justify-center bg-cover bg-center bg-gradient-to-br from-purple-400 via-purple-600 to-purple-800">
             <div className="h-[80vh] w-[90vw] md:w-[75vw] lg:w-[65vw] xl:w-[60vw] bg-white border-2 border-white shadow-2xl rounded-3xl flex">
@@ -80,7 +125,7 @@ const Auth = () => {
                 <div className="flex flex-col items-center justify-center w-full xl:w-1/2 px-8 py-6">
                     <div className="flex flex-col items-center text-center">
                         <h1 className="text-4xl font-bold md:text-5xl flex items-center">
-                            Synchronous
+                            Syntax
                             <img src={Victory} alt="Victory Emoji" className="h-12 ml-2" />
                         </h1>
                         <p className="font-medium mt-2">The World's fastest growing Web Chat-App</p>
