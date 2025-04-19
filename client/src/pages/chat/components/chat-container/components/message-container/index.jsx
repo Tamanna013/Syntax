@@ -27,14 +27,14 @@ const MessageContainer = () => {
   };
 
   const renderDMMessages=(message)=>(
-    <div className={`${message.sender===selectedChatData._id}"text-left":"text-right"`}>
+    <div className={`${message.sender === selectedChatData._id ? "text-left" : "text-right"}`}>
       {message.messageType==="text" && 
-        <div className={`${message.sender!==selectedChatData._id 
-          ? "bg-[#8417ff]/5 text-[#8417ff]/90 border-[#8417ff]/50"
-          : "bg-[#2a2b33]/5 text-white/80 border-[#ffffff]/20" }
-          } border inline-block rounded my-1 max-w-[50%] break-words`}>
+        <div className={`${message.sender !== selectedChatData._id 
+          ? "bg-[#8417ff]/5 text-[#8417ff]/90 border-[#8417ff]/50 rounded"
+          : "bg-[#2a2b33]/5 text-white/80 border-[#ffffff]/20 rounded"} 
+          border inline-block rounded my-1 p-2 max-w-[70%] w-fit break-words`}>
           {message.content}
-        </div>
+        </div>        
       }
       <div className='text-xs text-gray-600'>
         {moment(message.timestamp).format("LT")}
