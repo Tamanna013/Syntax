@@ -1,4 +1,7 @@
 # Syntax
+![ss2](./s2.png)
+![ss1](./s1.png)
+
 ### App Features:
 _Frontend_: Built with React <br>
 _UI Components_: ShadCN <br>
