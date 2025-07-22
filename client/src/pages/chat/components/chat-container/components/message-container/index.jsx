@@ -1,10 +1,29 @@
 import {useAppStore} from '@/store';
 import { useEffect, useRef } from 'react';
 import moment from "moment";
+import { GET_ALL_MESSAGES_ROUTE } from '../../../../../../utils/constants';
+import {apiClient} from '@/lib/api-client.js';
 
 const MessageContainer = () => {
   const scrollRef = useRef();
-  const { selectedChatType, selectedChatData, selectedChatMessages, userInfo } = useAppStore();
+  const { selectedChatType, selectedChatData, selectedChatMessages, userInfo, setSelectedChatMessages } = useAppStore();
+
+  useEffect(() => {
+    const getMessages = async () => {
+      try{
+        const response = await apiClient.post(GET_ALL_MESSAGES_ROUTE, { id: selectedChatData._id }, { withCredentials: true });
+
+        if(response.data.messages){
+          setSelectedChatMessages(response.data.messages);
+        }
+      } catch (error) {
+        console.error("Error fetching messages:", error);
+      }
+    };
+    if(selectedChatData._id && selectedChatType === 'contact') {
+      getMessages();
+    }
+  }, [selectedChatData, selectedChatType, setSelectedChatMessages]);
 
   const renderMessages = () => {
     let lastDate = null;
@@ -30,8 +49,8 @@ const MessageContainer = () => {
     <div className={`${message.sender === selectedChatData._id ? "text-left" : "text-right"}`}>
       {message.messageType==="text" && 
         <div className={`${message.sender !== selectedChatData._id 
-          ? "bg-[#8417ff]/5 text-[#8417ff]/90 border-[#8417ff]/50 rounded"
-          : "bg-[#2a2b33]/5 text-white/80 border-[#ffffff]/20 rounded"} 
+          ? "bg-[#8417ff]/5 text-[#8417ff]/90 border-[#8417ff]/50"
+          : "bg-[#2a2b33]/5 text-white/80 border-[#ffffff]/20"} 
           border inline-block rounded my-1 p-2 max-w-[70%] w-fit break-words`}>
           {message.content}
         </div>        

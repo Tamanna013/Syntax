@@ -1,7 +1,19 @@
 import NewDM from "./components/new-dm";
+import React, { useEffect } from "react";
 import ProfileInfo from "./components/profile-info";
+import { useAppStore } from "../../../../store";
 
 const Logo = () => {
+  const { setDirectMessagesContacts, directMessagesContacts } = useAppStore();
+  useEffect(() => {
+    const getContacts=async()=>{
+      const response=await apiClient.get(GET_DM_CONTACT_ROUTES, {withCredentials: true});
+      if(response.data.contacts){
+        setDirectMessagesContacts(response.data.contacts);
+      }
+    }
+    getContacts();
+  }, []);
   return (
     <div className="flex p-5  justify-start items-center gap-2">
       <svg
@@ -40,6 +52,9 @@ const ContactsContainer = () => {
         <div className="flex pr-10 justify-between items-center">
           <Title text="Direct Messages" />
           <NewDM />
+        </div>
+        <div className="max-h-[38vh] overflow-y-auto scrollbar-hidden">
+          <ContactList contacts={directMessagesContacts} />
         </div>
       </div>
       <div className="my-5">
